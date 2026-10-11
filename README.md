@@ -1,4 +1,5 @@
 # DZL - DayZ Mod Launcher
+<img width="1103" height="752" alt="1" src="https://github.com/user-attachments/assets/21de4681-dcf9-4f43-9621-89ac1b33c415" />
 
 A native desktop launcher for DayZ on Linux. Search for a server, download the mods it needs through Steam, and join with one click. It is a Python and PySide6 (Qt6) port of the Bash script `DZL.sh`.
 
