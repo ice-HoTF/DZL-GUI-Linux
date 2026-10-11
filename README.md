@@ -54,7 +54,7 @@ Your settings stay in `~/.config/dzl/` and `~/.cache/dzl/` after removal.
 
 ## Steam Deck
 
-SteamOS locks its system partition, so `pacman -U` needs `sudo steamos-readonly disable` first, and a SteamOS update will probably remove the install. Use Desktop Mode. The script `dzl-deck-install.sh` automates these steps. Steam Deck support is untested.
+SteamOS locks its system partition, so `pacman -U` needs `sudo steamos-readonly disable` first, and a SteamOS update will probably remove the install. Use Desktop Mode. The script `dzl-steamdeck-install.sh` automates these steps. Steam Deck support is untested.
 
 ## When DZL makes network requests
 
