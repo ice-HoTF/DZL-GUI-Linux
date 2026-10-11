@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=DZL
+GenericName=DayZ Mod Launcher
+Comment=Launch DayZ with server mods from a native GUI
+Exec=dzl
+Icon=dzl
+Terminal=false
+Categories=Game;
+Keywords=dayz;steam;mod;launcher;
+StartupNotify=true
