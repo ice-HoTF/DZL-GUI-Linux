@@ -1,0 +1,25 @@
+# EASY WAY: one script does steps 1 and 2 (cleans, repacks, builds)
+# bash dzl-build.sh
+
+# 1. Create source tarball
+rm -rf dzl-1.0.0 dzl-1.0.0.tar.gz
+mkdir -p dzl-1.0.0
+cp -r dzl/ dzl-1.0.0/
+cp PKGBUILD README.md LICENSE dzl-deck-install.sh dzl-restore.sh dzl-build.sh Build_Install.txt dzl-1.0.0/
+tar czf dzl-1.0.0.tar.gz dzl-1.0.0/
+
+# 2. Build the package
+makepkg -f
+
+# 3. Install
+sudo pacman -U dzl-1.0.0-1-any.pkg.tar.zst
+
+# 4. Run
+dzl
+
+# 5. Remove
+sudo pacman -R dzl
+# User data in ~/.config/dzl/ and ~/.cache/dzl/ is preserved.
+
+# Restore the project from the package on another PC
+# bash dzl-restore.sh dzl-1.0.0-1-any.pkg.tar.zst ./DZL-Rebuilt
