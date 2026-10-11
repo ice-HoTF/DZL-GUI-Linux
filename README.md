@@ -87,6 +87,18 @@ Mods are stored in Steam's own workshop folder for DayZ.
 
 Server data comes from the DayZ SA Launcher API, and mod data from the Steam Web API. This project is not affiliated with Bohemia Interactive, Valve, or DayZ SA Launcher. DayZ and Steam are trademarks of their respective owners.
 
+
+## Screenshots
+
+<img width="1103" height="752" alt="1" src="https://github.com/user-attachments/assets/e0bda3ee-b845-4e47-86a8-8c2631a77441" />
+<img width="1103" height="924" alt="51" src="https://github.com/user-attachments/assets/4b3a3e32-8c03-4f9c-8d3e-840412eababa" />
+<img width="1103" height="752" alt="2" src="https://github.com/user-attachments/assets/cacf8b1e-1f35-4ea5-873e-55fc6411252c" />
+<img width="1103" height="752" alt="3" src="https://github.com/user-attachments/assets/e99c53b1-938c-46b7-a0be-374b8687e968" />
+<img width="1103" height="924" alt="63" src="https://github.com/user-attachments/assets/03c47170-0f5b-4c62-ab8d-ce61cc6f48f5" />
+
+<img width="1103" height="924" alt="4" src="https://github.com/user-attachments/assets/4615f2b4-26fe-430b-a6d8-88edccd04ffe" />
+
+
 ## License
 
 MIT. See the `LICENSE` file. Copyright (c) 2026 Jonas Braastad.
