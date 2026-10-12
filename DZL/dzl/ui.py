@@ -484,16 +484,19 @@ class MainWindow(QMainWindow):
         labels = dict(FILTER_ITEMS)
         checks = {}
         spin = QSpinBox()
-        spin.setRange(0, 9999)
-        spin.setSpecialValueText("Off")
+        spin.setRange(1, 9999)
         spin.setSuffix(" ms")
-        spin.setValue(self._filters["ping_above"])
+        spin.setValue(self._filters["ping_above"] or 100)
+        spin.setEnabled(self._filters["ping_above"] > 0)
+        ping_cb = QCheckBox("Ping Above")
+        ping_cb.setChecked(self._filters["ping_above"] > 0)
+        ping_cb.toggled.connect(spin.setEnabled)
         order = ("hide_password", "ping", "hide_third",
                  "hide_official", "hide_community", "hide_modded")
         for key in order:
             if key == "ping":
                 row = QHBoxLayout()
-                row.addWidget(QLabel("Ping Above:"))
+                row.addWidget(ping_cb)
                 row.addWidget(spin)
                 row.addStretch(1)
                 bl.addLayout(row)
@@ -512,7 +515,8 @@ class MainWindow(QMainWindow):
         def do_reset():
             for cb in checks.values():
                 cb.setChecked(False)
-            spin.setValue(0)
+            ping_cb.setChecked(False)
+            spin.setValue(100)
 
         reset.clicked.connect(do_reset)
         apply_btn.clicked.connect(dlg.accept)
@@ -526,7 +530,7 @@ class MainWindow(QMainWindow):
             return
         for key, cb in checks.items():
             self._filters[key] = cb.isChecked()
-        self._filters["ping_above"] = spin.value()
+        self._filters["ping_above"] = spin.value() if ping_cb.isChecked() else 0
         self._save_filters()
         self._apply_filters_all()
 
@@ -564,6 +568,14 @@ class MainWindow(QMainWindow):
         self.mod_settings_btn = QPushButton("Server Settings")
         self._make_mod_menu(self.mod_settings_btn, "servers")
         btns.addWidget(self.mod_settings_btn)
+
+        def srv_sel():
+            on = bool(self.results_table.selectedItems())
+            self.join_btn.setEnabled(on)
+            self.mod_settings_btn.setEnabled(on)
+
+        self.results_table.itemSelectionChanged.connect(srv_sel)
+        srv_sel()
         btns.addStretch(1)
         self.refresh_servers_btn = QPushButton("Refresh")
         self.refresh_servers_btn.clicked.connect(
@@ -697,7 +709,7 @@ class MainWindow(QMainWindow):
         if not mod_ids:
             QMessageBox.information(self, "DZL", "Vanilla server, no mods.")
             return
-        label = "Verify" if mode == "verify" else "Remove"
+        label = "Reinstall" if mode == "verify" else "Remove"
         r = QMessageBox.question(
             self, label + " Mods",
             f"{label}: delete {len(mod_ids)} mod folder(s) used by this server?",
@@ -716,13 +728,9 @@ class MainWindow(QMainWindow):
     def _make_mod_menu(self, button, page):
         menu = QMenu(button)
         a_info = menu.addAction("Server Info")
-        a_verify = menu.addAction("Verify Mods")
         a_remove = menu.addAction("Remove Mods Used By This Server")
         a_info.triggered.connect(
             lambda: self._mod_settings_action(page, "info")
-        )
-        a_verify.triggered.connect(
-            lambda: self._mod_settings_action(page, "verify")
         )
         a_remove.triggered.connect(
             lambda: self._mod_settings_action(page, "remove")
@@ -950,6 +958,8 @@ class MainWindow(QMainWindow):
                 dlg.close()
                 QMessageBox.warning(self, "DZL", "Download Timed Tut.")
                 return
+            size = mods.human_size(mods.dir_size(self.downloads_dir))
+            dlg.setLabelText(f"Steam downloading: {size} ...")
             if steam.acf_needs_download(acf):
                 return
             timer.stop()
@@ -1039,6 +1049,7 @@ class MainWindow(QMainWindow):
         self.fav_join = QPushButton("Join")
         self.fav_verify = QPushButton("Server Settings")
         self._make_mod_menu(self.fav_verify, "favorites")
+
         self.fav_edit = QPushButton("Edit")
         self.fav_rename = QPushButton("Rename")
         self.fav_delete = QPushButton("Delete")
@@ -1056,6 +1067,16 @@ class MainWindow(QMainWindow):
         btns.addWidget(self.refresh_favs_btn)
         lay.addLayout(btns)
 
+        fav_btns = (self.fav_join, self.fav_verify, self.fav_edit,
+                    self.fav_rename, self.fav_delete)
+
+        def fav_sel():
+            on = bool(self.fav_table.selectedItems())
+            for b in fav_btns:
+                b.setEnabled(on)
+
+        self.fav_table.itemSelectionChanged.connect(fav_sel)
+        fav_sel()
         self._refresh_favorites()
         return w
 
@@ -1226,19 +1247,31 @@ class MainWindow(QMainWindow):
         self.mod_update = QPushButton("Update")
         self.mod_delete = QPushButton("Delete")
         self.mod_info_btn = QPushButton("Info")
-        self.mod_check_all = QPushButton("Check All For Updates")
+        self.mod_check_all = QPushButton("Check Mods For Updates")
+        self.mod_reinstall_all = QPushButton("Reinstall All Mods")
         self.mod_delete_all = QPushButton("Delete All Mods")
         self.mod_update.clicked.connect(self._mod_update)
         self.mod_delete.clicked.connect(self._mod_delete)
         self.mod_info_btn.clicked.connect(self._mod_info)
         self.mod_check_all.clicked.connect(self._mod_check_all)
+        self.mod_reinstall_all.clicked.connect(self._mod_reinstall_all)
         self.mod_delete_all.clicked.connect(self._mod_delete_all)
         for b in (self.mod_update, self.mod_delete, self.mod_info_btn,
-                  self.mod_check_all, self.mod_delete_all):
+                  self.mod_check_all, self.mod_reinstall_all,
+                  self.mod_delete_all):
             btns.addWidget(b)
         btns.addStretch(1)
         lay.addLayout(btns)
 
+        mod_btns = (self.mod_update, self.mod_delete, self.mod_info_btn)
+
+        def mod_sel():
+            on = bool(self.mod_table.selectedItems())
+            for b in mod_btns:
+                b.setEnabled(on)
+
+        self.mod_table.itemSelectionChanged.connect(mod_sel)
+        mod_sel()
         self._refresh_mods()
         return w
 
@@ -1488,6 +1521,38 @@ class MainWindow(QMainWindow):
                 f"Deleted {len(outdated)} outdated mod(s)."
             )
 
+    def _mod_reinstall_all(self):
+        if not self._mod_data:
+            QMessageBox.information(self, "DZL", "No mods installed.")
+            return
+        r = QMessageBox.question(
+            self, "Reinstall All Mods",
+            f"Delete and re-download all {len(self._mod_data)} mod(s)?",
+            QMessageBox.Yes | QMessageBox.No,
+        )
+        if r != QMessageBox.Yes:
+            return
+        import shutil
+        ids = [m["id"] for m in self._mod_data]
+        for mid in ids:
+            shutil.rmtree(self.mods_dir / mid, ignore_errors=True)
+        steam.prepare_join(self.steamapps, self.game_dir)
+        self._refresh_mods()
+        self._download_queue = list(ids)
+        self._reinstall_next()
+
+    def _reinstall_next(self):
+        if not self._download_queue:
+            self._wait_for_acf(self._single_done)
+            return
+        mid = self._download_queue.pop(0)
+        self.status.showMessage(f"Downloading mod {mid} ...")
+        self._run_worker(
+            steam.download_mod, mid, self.steamapps,
+            on_done=lambda _: self._reinstall_next(),
+            on_error=lambda e: self._reinstall_next(),
+        )
+
     def _mod_delete_all(self):
         r = QMessageBox.question(
             self, "Delete All Mods",
@@ -1657,6 +1722,16 @@ class MainWindow(QMainWindow):
             for role in (QPalette.Window, QPalette.Base):
                 pal.setColor(role, QColor(c["background"]))
 
+        if c["text"]:
+            fg = QColor(c["text"])
+            bg = pal.color(QPalette.Window)
+            dim = QColor(
+                (fg.red() * 4 + bg.red() * 6) // 10,
+                (fg.green() * 4 + bg.green() * 6) // 10,
+                (fg.blue() * 4 + bg.blue() * 6) // 10,
+            )
+            for role in (QPalette.WindowText, QPalette.Text, QPalette.ButtonText):
+                pal.setColor(QPalette.Disabled, role, dim)
         if c["accent"]:
             pal.setColor(QPalette.Highlight, QColor(c["accent"]))
             if hasattr(QPalette, "Accent"):
@@ -1826,8 +1901,9 @@ class ManualSetupDialog(QDialog):
         form = QFormLayout(self)
 
         self.ip = QLineEdit()
-        self.ip.setPlaceholderText("1.2.3.4:2302")
+        self.ip.setPlaceholderText("180.100.10.10:2302")
         self.qport = QLineEdit()
+        self.qport.setPlaceholderText("26900")
         self.name = QLineEdit()
         self.name.setPlaceholderText("Optional server label")
 
@@ -1849,6 +1925,12 @@ class ManualSetupDialog(QDialog):
         btns.accepted.connect(self._validate)
         btns.rejected.connect(self.reject)
         form.addRow(btns)
+        self.setMinimumWidth(
+            self.fontMetrics().horizontalAdvance(
+                "Find server info at BattleMetrics"
+            ) + 160
+        )
+        self.adjustSize()
 
     def _validate(self):
         addr = self.ip.text().strip()
