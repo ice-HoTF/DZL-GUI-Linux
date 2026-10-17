@@ -1039,7 +1039,7 @@ class MainWindow(QMainWindow):
         w = QWidget()
         lay = QVBoxLayout(w)
 
-        self.fav_table = self._new_table()
+        self.fav_table = self._new_table()         self.fav_table.setColumnHidden(STAR_COL, True)
         self.fav_table.doubleClicked.connect(self._fav_double)
         self.fav_table.cellClicked.connect(self._fav_cell_clicked)
         self.fav_table.customContextMenuRequested.connect(self._fav_menu)
