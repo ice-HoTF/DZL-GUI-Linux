@@ -15,7 +15,7 @@ A native desktop launcher for DayZ on Linux. Search for a server, download the m
 
 ## Requirements
 
-- Arch Linux or an Arch-based distribution
+- Arch Linux or an Arch-based distributionJonas Braastad
 - The official Steam package. Flatpak Steam is not supported.
 - `python` and `pyside6`
 - DayZ installed through Steam, with Steam running on the same user account
@@ -88,4 +88,4 @@ Server data comes from the DayZ SA Launcher API, and mod data from the Steam Web
 
 ## License
 
-MIT. See the `LICENSE` file. Copyright (c) [YEAR] [YOUR NAME].
+MIT. See the `LICENSE` file. Copyright (c) 2026 ice_hotf.
