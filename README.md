@@ -101,4 +101,4 @@ Server data comes from the DayZ SA Launcher API, and mod data from the Steam Web
 
 ## License
 
-MIT. See the `LICENSE` file. Copyright (c) 2026 Jonas Braastad.
+MIT. See the `LICENSE` file. Copyright (c) 2026 ice_hotf.
